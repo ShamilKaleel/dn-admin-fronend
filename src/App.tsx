@@ -41,7 +41,7 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 export default function App() {
   const { authState } = useAuth();
   return (
-    <Router>
+    <Router basename="/admin">
       <Routes>
         {/* Public Routes */}
         <Route
