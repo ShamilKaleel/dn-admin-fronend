@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
@@ -58,19 +59,15 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     // Fetch booking stats
-    axios
-      .get<BookingStats>(
-        "http://localhost:8080/api/bookings/currentMonth/stats"
-      )
+    axiosInstance
+      .get<BookingStats>("/bookings/currentMonth/stats")
       .then((response) => setStats(response.data))
       .catch((error) => console.error("Error fetching booking stats:", error))
       .finally(() => setLoading(false));
 
     // Fetch upcoming schedules
-    axios
-      .get<UpcomingSchedule[]>(
-        "http://localhost:8080/api/schedules/upcomingSchedules"
-      )
+    axiosInstance
+      .get<UpcomingSchedule[]>("/schedules/upcomingSchedules")
       .then((response) => setSchedules(response.data))
       .catch((error) =>
         console.error("Error fetching upcoming schedules:", error)
@@ -78,10 +75,8 @@ const Dashboard: React.FC = () => {
       .finally(() => setScheduleLoading(false));
 
     // Fetch cancelled schedules
-    axios
-      .get<CancelledSchedule[]>(
-        "http://localhost:8080/api/schedules/cancelledSchedules"
-      )
+    axiosInstance
+      .get<CancelledSchedule[]>("/schedules/cancelledSchedules")
       .then((response) => setCancelledSchedules(response.data))
       .catch((error) =>
         console.error("Error fetching cancelled schedules:", error)

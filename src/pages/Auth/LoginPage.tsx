@@ -1,17 +1,19 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Lorder from "@/components/Lorder";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 import LoginImage from "@/assets/images/LoginImage.png";
 import Pattern from "@/assets/images/Pattern.png";
 import { useAuth } from "@/hooks/useAuth";
 import Logo from "@/assets/images/Logo.png";
 import { useToast } from "@/hooks/use-toast";
+
 // Schema validation using Zod
 const schema = z.object({
   username: z.string(),
@@ -25,6 +27,7 @@ export default function LoginForm() {
   // Get the login function from the AuthContext
   const { login } = useAuth();
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
   // Initialize React Hook Form with Zod resolver and default values
   const {
@@ -78,45 +81,68 @@ export default function LoginForm() {
 
           {/* Form for email and password input */}
           <form
-            className="flex flex-col gap-5  w-[300px]"
+            className="flex flex-col gap-5 w-[300px]"
             onSubmit={handleSubmit(onSubmit)} // Attach form submission handler
           >
             {/* Email input field */}
             <div className="flex flex-col items-start relative">
-              <label htmlFor="email" className="pl-1">
+              <label htmlFor="email" className="pl-1 mb-2">
                 Email
               </label>
-              <Input
-                {...register("username")}
-                type="text"
-                placeholder="Email"
-              />
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <Input
+                  {...register("username")}
+                  type="text"
+                  placeholder="name@example.com"
+                  className="pl-10 w-full focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
               {/* Display email validation error */}
-              <p className="text-red-500 absolute top-16 text-xs text-center pl-1">
+              <p className="text-red-500 text-xs mt-1 pl-1">
                 {errors.username?.message}
               </p>
             </div>
 
             {/* Password input field */}
             <div className="flex flex-col items-start relative">
-              <label htmlFor="password" className="pl-1">
+              <label htmlFor="password" className="pl-1 mb-2">
                 Password
               </label>
-              <Input
-                {...register("password")}
-                type="password"
-                placeholder="Password"
-              />
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <Input
+                  {...register("password")}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="pl-10 w-full pr-10 focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
               {/* Display password validation error */}
-              <p className="text-red-500 absolute top-16 text-xs text-center pl-1">
+              <p className="text-red-500 text-xs mt-1 pl-1">
                 {errors.password?.message}
               </p>
               <p className="text-right w-full block mt-5">
                 <Link
                   to="/forget-password"
-                  className=" underline text-gray-500"
+                  className="underline text-gray-500 hover:text-primary transition-colors"
                 >
-                  Forgot Password ?
+                  Forgot Password?
                 </Link>
               </p>
             </div>
@@ -128,12 +154,12 @@ export default function LoginForm() {
                 type="submit"
                 className="mx-auto w-full"
               >
-                {isSubmitting ? <Lorder /> : "Submit"}{" "}
+                {isSubmitting ? <Lorder /> : "Sign In"}{" "}
                 {/* Show loader or text */}
               </Button>
               {/* Display form-level error message */}
 
-              <p className=" text-center text-red-500  pl-1 absolute top-32 left-0 right-0">
+              <p className="text-center text-red-500 pl-1 absolute top-32 left-0 right-0">
                 {errors.root?.message}
               </p>
             </div>
