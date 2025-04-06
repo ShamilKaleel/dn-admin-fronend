@@ -14,7 +14,7 @@ export default function PatientLogBookPage() {
         </p>
 
         <Tabs defaultValue="logbook" className="w-full">
-          <TabsList className="mb-6 grid w-full grid-cols-2 md:w-auto">
+          <TabsList className="mb-2 grid w-full grid-cols-2 md:w-auto">
             <TabsTrigger value="logbook" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span>Treatment Log</span>
