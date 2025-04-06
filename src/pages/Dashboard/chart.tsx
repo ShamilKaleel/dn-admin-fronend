@@ -55,7 +55,6 @@ export default function Component() {
   const [timeRange, setTimeRange] = React.useState("90d");
   interface ChartDataItem {
     date: string;
-
     appointmentCount: number;
   }
 
@@ -70,27 +69,49 @@ export default function Component() {
     getData();
   }, []);
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = chartData[chartData.length - 1].date;
+  const filteredData = React.useMemo(() => {
+    if (!chartData.length) return [];
+
+    // Make sure dates are properly sorted
+    const sortedData = [...chartData].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Get the latest date from our data
+    const latestDateStr = sortedData[sortedData.length - 1]?.date;
+    if (!latestDateStr) return [];
+
+    const latestDate = new Date(latestDateStr);
+
+    // Calculate the cutoff date based on the selected time range
     let daysToSubtract = 90;
     if (timeRange === "30d") {
       daysToSubtract = 30;
     } else if (timeRange === "7d") {
       daysToSubtract = 7;
     }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+
+    const cutoffDate = new Date(latestDate);
+    cutoffDate.setDate(cutoffDate.getDate() - daysToSubtract);
+
+    // Filter the data
+    return sortedData.filter((item) => {
+      const itemDate = new Date(item.date);
+      return itemDate >= cutoffDate;
+    });
+  }, [chartData, timeRange]);
 
   return (
-    <Card className=" shadow-xl">
+    <Card className="shadow-xl">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
           <CardTitle>Area Chart - Interactive</CardTitle>
           <CardDescription>
-            Showing total booking for the last 3 months
+            {timeRange === "90d" &&
+              "Showing total booking for the last 3 months"}
+            {timeRange === "30d" &&
+              "Showing total booking for the last 30 days"}
+            {timeRange === "7d" && "Showing total booking for the last 7 days"}
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>

@@ -6,10 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Lorder from "@/components/Lorder";
 import PatientLogg from "./patient-log";
 const PatientLogDetails = () => {
-  const { id, logID } = useParams<{
-    id: string;
-    logID: string;
-  }>();
+  const { id, logID } = useParams<{ id: string; logID: string }>();
   const { getLogById } = useLog();
   const [log, setLog] = useState<PatientLog | null>(null);
   const [loading, setLoading] = useState(true);
