@@ -2,30 +2,37 @@ import { useSchedules } from "@/hooks/useSchedule";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import ScheduleForm from "@/components/forms/schedule-form";
+import ScheduleAnalytics from "./schedule-analytics";
 import { useEffect, useState } from "react";
+import Lorder from "@/components/Lorder";
+
 export default function SchedulePage() {
   const { scheduleState, fetchSchedules } = useSchedules();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
-    setIsLoading(true);
-    try {
-      const fetchData = async () => {
+    const fetchData = async () => {
+      try {
         await fetchSchedules();
-      };
-      fetchData();
-    } catch (error) {
-      console.error("Failed to fetch schedules", error);
-    } finally {
-      setIsLoading(false);
-    }
+      } catch (error) {
+        console.error("Failed to fetch schedules", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex w-full h-screen justify-center items-center">
+        <Lorder />
+      </div>
+    );
   }
 
   return (
@@ -42,15 +49,15 @@ export default function SchedulePage() {
 
       <div className="pb-5 px-2 lg:px-0">
         <Tabs defaultValue="schedules">
-          <TabsList className=" ">
-            <TabsTrigger value="schedules">Schedules </TabsTrigger>
-            <TabsTrigger value="apoinments">Not ready</TabsTrigger>
+          <TabsList className="">
+            <TabsTrigger value="schedules">Schedules</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
           <TabsContent value="schedules">
             <DataTable columns={columns} data={scheduleState.schedules} />
           </TabsContent>
-          <TabsContent value="apoinments">
-            <div>hi</div>
+          <TabsContent value="analytics">
+            <ScheduleAnalytics />
           </TabsContent>
         </Tabs>
       </div>
