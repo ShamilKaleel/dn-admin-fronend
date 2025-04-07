@@ -24,7 +24,8 @@ import FeedbackPage from "@/pages/Feedback/FeedbackPage";
 import ContactUsPage from "@/pages/ContactUs/ContactUsPage";
 import PatientLogPage from "./pages/PatientLog/PatientLogBookPage";
 import PatientLogDetails from "./pages/PatientLog/PatientLogPage";
-
+import { hasAccess } from "@/lib/roleAccess";
+import RoleRoute from "./components/RoleRoute";
 //test git
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { authState, isLording } = useAuth();
@@ -60,27 +61,58 @@ export default function App() {
             </ProtectedRoute>
           }
         >
+          <Route index element={<DashboardPage />} />
           <Route
-            index
-            element={
-              <div>
-                <DashboardPage />
-              </div>
-            }
+            path="/admin"
+            element={<RoleRoute element={<AdminPage />} path="/admin" />}
           />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/dentist" element={<DentistPage />} />
-          <Route path="/patient" element={<PatientPage />} />
-          <Route path="/patient/:id" element={<PatientLogPage />} />
+          <Route
+            path="/dentist"
+            element={<RoleRoute element={<DentistPage />} path="/dentist" />}
+          />
+          <Route
+            path="/patient"
+            element={<RoleRoute element={<PatientPage />} path="/patient" />}
+          />
+          <Route
+            path="/patient/:id"
+            element={<RoleRoute element={<PatientLogPage />} path="/patient" />}
+          />
           <Route
             path="/patient/:id/log/:logID"
-            element={<PatientLogDetails />}
+            element={
+              <RoleRoute element={<PatientLogDetails />} path="/patient" />
+            }
           />
-          <Route path="/receptionist" element={<ReceptionistPage />} />
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/appointment-list" element={<AppointmentListPage />} />
-          <Route path="/feedback" element={<FeedbackPage />} />
-          <Route path="/contact-us" element={<ContactUsPage />} />
+          <Route
+            path="/receptionist"
+            element={
+              <RoleRoute element={<ReceptionistPage />} path="/receptionist" />
+            }
+          />
+          <Route
+            path="/schedule"
+            element={<RoleRoute element={<SchedulePage />} path="/schedule" />}
+          />
+          <Route
+            path="/appointment-list"
+            element={
+              <RoleRoute
+                element={<AppointmentListPage />}
+                path="/appointment-list"
+              />
+            }
+          />
+          <Route
+            path="/feedback"
+            element={<RoleRoute element={<FeedbackPage />} path="/feedback" />}
+          />
+          <Route
+            path="/contact-us"
+            element={
+              <RoleRoute element={<ContactUsPage />} path="/contact-us" />
+            }
+          />
         </Route>
 
         {/* Public Routes only for testiong */}

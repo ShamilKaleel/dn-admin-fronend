@@ -15,13 +15,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { navLinks } from "@/constant";
 import { Outlet } from "react-router-dom";
 import Logo from "@/assets/images/Logo.png";
-
+import { hasAccess } from "@/lib/roleAccess";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { useState } from "react";
 
 export default function Layout() {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, authState } = useAuth();
+  const userRoles = authState?.roles || [];
+
+  const filteredNavLinks = navLinks.filter((link) =>
+    hasAccess(userRoles, link.path)
+  );
 
   const handleLogout = async () => {
     try {
@@ -57,7 +62,7 @@ export default function Layout() {
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              {navLinks.map((link) => (
+              {filteredNavLinks.map((link) => (
                 <NavLink
                   key={link.path}
                   to={link.path}
@@ -67,18 +72,10 @@ export default function Layout() {
                       : "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary "
                   }
                 >
-                  {link.icon} {/* Render the Lucide icon */}
+                  {link.icon}
                   <span>{link.title}</span>
                 </NavLink>
               ))}
-
-              {/* <NavLink
-                to="#"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
-              >
-                <Package className="h-4 w-4" />
-                Products{" "}
-              </NavLink> */}
             </nav>
           </div>
 
@@ -132,17 +129,17 @@ export default function Layout() {
                   </Link>
                 </div>
 
-                {navLinks.map((link) => (
+                {filteredNavLinks.map((link) => (
                   <NavLink
                     key={link.path}
                     to={link.path}
                     className={({ isActive }) =>
                       isActive
-                        ? "mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-black  dark:text-foreground hover:text-foreground"
-                        : "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2  dark:text-muted-foreground dark:hover:text-foreground "
+                        ? "mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-black dark:text-foreground hover:text-foreground"
+                        : "mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 dark:text-muted-foreground dark:hover:text-foreground "
                     }
                   >
-                    {link.icon} {/* Render the Lucide icon */}
+                    {link.icon}
                     <span>{link.title}</span>
                   </NavLink>
                 ))}
