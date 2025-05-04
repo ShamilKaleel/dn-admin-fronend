@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useBooking } from "@/hooks/useBooking";
 import { Patient } from "@/types/patient";
 import { Loader2 } from "lucide-react";
+import { usePatient } from "@/hooks/usePatient";
 
 // Zod schema for form validation
 const bookingSchema = z.object({
@@ -26,7 +27,7 @@ const PatientFromBookingForm: React.FC<PatientFromBookingFormProps> = ({
   onComplete,
 }) => {
   const { toast } = useToast();
-  const { getOrCreatePatientFromBooking } = useBooking();
+  const { getOrCreatePatientFromBooking } = usePatient();
   const [loading, setLoading] = useState(false);
 
   const {
