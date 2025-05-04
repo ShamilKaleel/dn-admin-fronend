@@ -49,7 +49,7 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
         url: string;
         key: string;
       }>(
-        `http://localhost:8080/api/s3/generate-presigned-url`,
+        `http://localhost:8082/api/s3/generate-presigned-url`,
         {
           fileName: selectedFile.name,
           fileType: selectedFile.type,
