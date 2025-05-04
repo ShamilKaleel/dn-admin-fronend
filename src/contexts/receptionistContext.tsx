@@ -7,7 +7,7 @@ type ReceptionistAction =
   | { type: "FETCH_RECEPTIONISTS"; payload: Receptionist[] }
   | { type: "CREATE_RECEPTIONIST"; payload: Receptionist }
   | { type: "UPDATE_RECEPTIONIST"; payload: Receptionist }
-  | { type: "DELETE_RECEPTIONIST"; payload: number };
+  | { type: "DELETE_RECEPTIONIST"; payload: string };
 
 // Receptionist state
 interface ReceptionistState {
@@ -51,11 +51,11 @@ export const ReceptionistContext = createContext<{
   fetchReceptionists: () => Promise<void>;
   createReceptionist: (receptionist: CreateReceptionist) => Promise<void>;
   updateReceptionist: (
-    id: number,
+    id: string,
     receptionist: CreateReceptionist
   ) => Promise<void>;
-  deleteReceptionist: (id: number) => Promise<void>;
-  getReceptionistById: (id: number) => Promise<Receptionist>;
+  deleteReceptionist: (id: string) => Promise<void>;
+  getReceptionistById: (id: string) => Promise<Receptionist>;
 } | null>(null);
 
 // Provider
@@ -90,7 +90,7 @@ export const ReceptionistProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateReceptionist = async (
-    id: number,
+    id: string,
     receptionist: CreateReceptionist
   ) => {
     const response = await axiosInstance.put<Receptionist>(
@@ -100,12 +100,12 @@ export const ReceptionistProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: "UPDATE_RECEPTIONIST", payload: response.data });
   };
 
-  const deleteReceptionist = async (id: number) => {
+  const deleteReceptionist = async (id: string) => {
     await axiosInstance.delete(`/receptionist/${id}`);
     dispatch({ type: "DELETE_RECEPTIONIST", payload: id });
   };
 
-  const getReceptionistById = async (id: number) => {
+  const getReceptionistById = async (id: string) => {
     const response = await axiosInstance.get<Receptionist>(
       `/receptionist/${id}`
     );
