@@ -1,9 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { Dentist } from "@/types/dentist";
+import { Receptionist } from "@/types/receptionist";
 
-export const columns: ColumnDef<Dentist>[] = [
+export const columns: ColumnDef<Receptionist>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -33,25 +33,21 @@ export const columns: ColumnDef<Dentist>[] = [
     ),
   },
   {
-    accessorKey: "specialization",
+    accessorKey: "gender",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="specialization" />
+      <DataTableColumnHeader column={column} title="gender" />
     ),
     cell: ({ row }) => (
-      <div className="w-[100px] capitalize">
-        {row.getValue("specialization")}
-      </div>
+      <div className="w-[100px] capitalize">{row.getValue("gender")}</div>
     ),
   },
   {
-    accessorKey: "licenseNumber",
+    accessorKey: "shiftTiming",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="licenseNumber" />
+      <DataTableColumnHeader column={column} title="shiftTiming" />
     ),
     cell: ({ row }) => (
-      <div className="w-[100px] capitalize">
-        {row.getValue("licenseNumber")}
-      </div>
+      <div className="w-[100px] capitalize">{row.getValue("shiftTiming")}</div>
     ),
   },
 
