@@ -6,7 +6,6 @@ export interface Receptionist {
   firstName: string;
   phoneNumber: string;
   nic: string;
-  shiftTiming: string;
   roles: string[];
 }
 
@@ -18,5 +17,4 @@ export interface CreateReceptionist {
   firstName: string;
   nic: string;
   phoneNumber: string;
-  shiftTiming: string;
 }
