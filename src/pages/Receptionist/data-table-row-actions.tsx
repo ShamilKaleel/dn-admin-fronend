@@ -1,7 +1,7 @@
 import { useState } from "react";
-
+import ReceptionistEditForm from "@/components/forms/reseptionist-edit-form";
 import DocterDeleteForm from "@/components/forms/docter-delete-form";
-import DoctorEditForm from "@/components/forms/doctor-edit-form";
+
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,11 +32,10 @@ export function DataTableRowActions<TData extends WithId<string>>({
       <ResponsiveDialog
         isOpen={isEditOpen}
         setIsOpen={setIsEditOpen}
-        title="Edit Person"
+        title="Edit Reseptionist"
         className="sm:max-w-screen-md p-20"
       >
-        {/* <EditForm cardId={cardId} setIsOpen={setIsEditOpen} /> */}
-        <DoctorEditForm cardId={cardId} setIsOpen={setIsEditOpen} />
+        <ReceptionistEditForm cardId={cardId} setIsOpen={setIsEditOpen} />
       </ResponsiveDialog>
       <ResponsiveDialog
         isOpen={isDeleteOpen}
