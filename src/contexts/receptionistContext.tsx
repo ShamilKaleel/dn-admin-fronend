@@ -1,6 +1,6 @@
 import { createContext, useReducer, ReactNode, useEffect } from "react";
 import axiosInstance from "@/api/axiosInstance";
-import { Receptionist, CreateReceptionist } from "@/types/Receptionist";
+import { Receptionist, CreateReceptionist } from "@/types/receptionist";
 
 // Actions for Receptionist
 type ReceptionistAction =
