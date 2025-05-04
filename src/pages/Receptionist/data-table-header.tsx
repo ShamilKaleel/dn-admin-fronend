@@ -36,7 +36,7 @@ export function DataTableHeader<TData>({
       >
         <ReceptionistForm setIsOpen={setIsOpen} />
       </ResponsiveDialog>
-      <h1 className="text-2xl font-bold pl-1">Doctors List</h1>
+      <h1 className="text-2xl font-bold pl-1">Receptionist List</h1>
       <div className="flex gap-2 md:gap-5">
         <Button
           className="btn btn-primary bg-muted"

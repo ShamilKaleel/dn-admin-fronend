@@ -42,15 +42,23 @@ export const columns: ColumnDef<Receptionist>[] = [
     ),
   },
   {
-    accessorKey: "shiftTiming",
+    accessorKey: "phoneNumber",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="shiftTiming" />
+      <DataTableColumnHeader column={column} title="Phone Number" />
     ),
     cell: ({ row }) => (
-      <div className="w-[100px] capitalize">{row.getValue("shiftTiming")}</div>
+      <div className="w-[100px] capitalize">{row.getValue("phoneNumber")}</div>
     ),
   },
-
+  {
+    accessorKey: "nic",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="NIC" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[100px] capitalize">{row.getValue("nic")}</div>
+    ),
+  },
   {
     accessorKey: "email",
     header: ({ column }) => (
