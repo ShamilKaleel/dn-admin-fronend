@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Row } from "@tanstack/react-table";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,12 +6,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, SquarePen, Trash2, Copy } from "lucide-react";
 import { useSchedules } from "@/hooks/useSchedule";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
-import { CreateSchedule } from "@/types/schedule";
 type StatusBarProps = {
   status:
     | "AVAILABLE"
@@ -25,10 +22,13 @@ type StatusBarProps = {
 };
 
 const StatusBar: React.FC<StatusBarProps> = ({ status, cardId }) => {
-  const [newStatus, setNewStatus] = React.useState<string>(status);
+  const [currentStatus, setCurrentStatus] = useState<string>(status);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
 
   const { toast } = useToast();
   const { updateScheduleStatus } = useSchedules();
+
   // Define styles or messages for each status
   const statusStyles: { [key: string]: string } = {
     FULL: "text-yellow-900 bg-yellow-200 border-yellow-600",
@@ -40,9 +40,13 @@ const StatusBar: React.FC<StatusBarProps> = ({ status, cardId }) => {
   };
 
   const handleStatusChange = async (newStatus: string) => {
-    setNewStatus(newStatus);
+    setIsLoading(true);
+    setLoadingStatus(newStatus);
+
     try {
       await updateScheduleStatus(cardId, newStatus);
+      setCurrentStatus(newStatus);
+
       toast({
         title: "Status updated",
         description: `Status updated to ${newStatus}`,
@@ -55,6 +59,9 @@ const StatusBar: React.FC<StatusBarProps> = ({ status, cardId }) => {
         description:
           error.response?.data?.details?.error || "Something went wrong",
       });
+    } finally {
+      setIsLoading(false);
+      setLoadingStatus(null);
     }
   };
 
@@ -63,74 +70,115 @@ const StatusBar: React.FC<StatusBarProps> = ({ status, cardId }) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            className={` w-[85px] h-6 text-center   border font-semibold rounded-lg text-xs ${statusStyles[status]}`}
+            className={`w-[85px] h-6 text-center border font-semibold rounded-lg text-xs ${statusStyles[currentStatus]} flex items-center justify-center`}
+            disabled={isLoading}
           >
-            {status}
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              currentStatus
+            )}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px] z-50">
-          <DropdownMenuItem className="group flex w-full items-center justify-between  text-left p-0 text-sm font-base  ">
+          <DropdownMenuItem className="group flex w-full items-center justify-between text-left p-0 text-sm font-base">
             <button
-              onClick={() => {
-                handleStatusChange("AVAILABLE");
-              }}
-              className="w-full justify-start flex rounded-md p-2 transition-all duration-75 "
+              onClick={() => handleStatusChange("AVAILABLE")}
+              className="w-full justify-start flex rounded-md p-2 transition-all duration-75"
+              disabled={isLoading}
             >
-              AVAILABLE
+              {loadingStatus === "AVAILABLE" ? (
+                <span className="flex items-center">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  AVAILABLE
+                </span>
+              ) : (
+                "AVAILABLE"
+              )}
             </button>
           </DropdownMenuItem>
-          <DropdownMenuItem className="group flex w-full items-center justify-between  text-left p-0 text-sm font-base  ">
+          <DropdownMenuItem className="group flex w-full items-center justify-between text-left p-0 text-sm font-base">
             <button
-              onClick={() => {
-                handleStatusChange("unavailable");
-              }}
-              className="w-full justify-start flex rounded-md p-2 transition-all duration-75 "
+              onClick={() => handleStatusChange("UNAVAILABLE")}
+              className="w-full justify-start flex rounded-md p-2 transition-all duration-75"
+              disabled={isLoading}
             >
-              UNAVAILABLE
-            </button>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="group flex w-full items-center justify-between  text-left p-0 text-sm font-base ">
-            <button
-              onClick={() => {
-                handleStatusChange("ACTIVE");
-              }}
-              className="w-full justify-start flex rounded-md p-2 transition-all duration-75 "
-            >
-              ACTIVE
-            </button>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="group flex w-full items-center justify-between  text-left p-0 text-sm font-base ">
-            <button
-              onClick={() => {
-                handleStatusChange("FULL");
-              }}
-              className="w-full justify-start flex  rounded-md p-2 transition-all duration-75 "
-            >
-              FULL
+              {loadingStatus === "UNAVAILABLE" ? (
+                <span className="flex items-center">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  UNAVAILABLE
+                </span>
+              ) : (
+                "UNAVAILABLE"
+              )}
             </button>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="group flex w-full items-center justify-between  text-left p-0 text-sm font-base ">
+          <DropdownMenuItem className="group flex w-full items-center justify-between text-left p-0 text-sm font-base">
             <button
-              onClick={() => {
-                handleStatusChange("CANCELLED");
-              }}
-              className="w-full justify-start flex  rounded-md p-2 transition-all duration-75 "
+              onClick={() => handleStatusChange("ACTIVE")}
+              className="w-full justify-start flex rounded-md p-2 transition-all duration-75"
+              disabled={isLoading}
             >
-              CANCELLED
+              {loadingStatus === "ACTIVE" ? (
+                <span className="flex items-center">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ACTIVE
+                </span>
+              ) : (
+                "ACTIVE"
+              )}
             </button>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="group flex w-full items-center justify-between  text-left p-0 text-sm font-base ">
+          <DropdownMenuItem className="group flex w-full items-center justify-between text-left p-0 text-sm font-base">
             <button
-              onClick={() => {
-                handleStatusChange("FINISHED");
-              }}
-              className="w-full justify-start flex  rounded-md p-2 transition-all duration-75 "
+              onClick={() => handleStatusChange("FULL")}
+              className="w-full justify-start flex rounded-md p-2 transition-all duration-75"
+              disabled={isLoading}
             >
-              FINISHED
+              {loadingStatus === "FULL" ? (
+                <span className="flex items-center">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  FULL
+                </span>
+              ) : (
+                "FULL"
+              )}
+            </button>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="group flex w-full items-center justify-between text-left p-0 text-sm font-base">
+            <button
+              onClick={() => handleStatusChange("CANCELLED")}
+              className="w-full justify-start flex rounded-md p-2 transition-all duration-75"
+              disabled={isLoading}
+            >
+              {loadingStatus === "CANCELLED" ? (
+                <span className="flex items-center">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  CANCELLED
+                </span>
+              ) : (
+                "CANCELLED"
+              )}
+            </button>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="group flex w-full items-center justify-between text-left p-0 text-sm font-base">
+            <button
+              onClick={() => handleStatusChange("FINISHED")}
+              className="w-full justify-start flex rounded-md p-2 transition-all duration-75"
+              disabled={isLoading}
+            >
+              {loadingStatus === "FINISHED" ? (
+                <span className="flex items-center">
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  FINISHED
+                </span>
+              ) : (
+                "FINISHED"
+              )}
             </button>
           </DropdownMenuItem>
         </DropdownMenuContent>

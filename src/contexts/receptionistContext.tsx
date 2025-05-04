@@ -102,6 +102,7 @@ export const ReceptionistProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteReceptionist = async (id: string) => {
     await axiosInstance.delete(`/receptionist/${id}`);
+
     dispatch({ type: "DELETE_RECEPTIONIST", payload: id });
   };
 
