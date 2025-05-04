@@ -2,7 +2,7 @@ import { createContext, useReducer, ReactNode } from "react";
 import axiosInstance from "@/api/axiosInstance";
 import { Dentist, CreateDentist, UpdateDentist } from "@/types/dentist";
 import { useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
+
 // Actions for Dentist
 type DentistAction =
   | { type: "FETCH_DENTISTS"; payload: Dentist[] }
