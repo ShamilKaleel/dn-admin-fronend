@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReceptionist } from "@/hooks/useReceptionist";
 import { useToast } from "@/hooks/use-toast";
-import { UpdateReceptionist } from "@/types/receptionist";
+import { CreateReceptionist } from "@/types/receptionist";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -56,10 +56,10 @@ const ReceptionistEditForm: React.FC<EditReceptionistFormProps> = ({
   useEffect(() => {
     const fetchReceptionist = async () => {
       try {
-        const receptionist = await getReceptionistById(Number(cardId));
+        const receptionist = await getReceptionistById(cardId);
         setValue("userName", receptionist.userName);
         setValue("email", receptionist.email);
-        setValue("gender", receptionist.gender);
+        setValue("gender", receptionist.gender as "Male" | "Female");
         setValue("firstName", receptionist.firstName);
         setValue("nic", receptionist.nic);
         setValue("phoneNumber", receptionist.phoneNumber);
@@ -77,7 +77,7 @@ const ReceptionistEditForm: React.FC<EditReceptionistFormProps> = ({
 
   const onSubmit = async (data: ReceptionistEditFormInputs) => {
     try {
-      await updateReceptionist(Number(cardId), data as CreateReceptionist);
+      await updateReceptionist(cardId, data as CreateReceptionist);
 
       toast({
         title: "Receptionist Updated",
