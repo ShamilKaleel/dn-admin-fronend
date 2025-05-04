@@ -53,6 +53,7 @@ export const PatientContext = createContext<{
   updatePatient: (id: string, patient: UpdatePatient) => Promise<void>;
   deletePatient: (id: string) => Promise<void>;
   getPatientById: (id: string) => Promise<Patient>;
+  getOrCreatePatientFromBooking: (bookingId: string) => Promise<Patient>;
 } | null>(null);
 
 // Provider
@@ -84,6 +85,15 @@ export const PatientProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: "CREATE_PATIENT", payload: response.data });
   };
 
+  const getOrCreatePatientFromBooking = async (bookingId: string) => {
+    const response = await axiosInstance.post<Patient>(
+      `/bookings/${bookingId}/get-or-create-patient`
+    );
+    dispatch({ type: "CREATE_PATIENT", payload: response.data });
+
+    return response.data;
+  };
+
   const updatePatient = async (id: string, patient: UpdatePatient) => {
     const response = await axiosInstance.put<Patient>(
       `/patients/${id}`,
@@ -111,6 +121,7 @@ export const PatientProvider = ({ children }: { children: ReactNode }) => {
         updatePatient,
         deletePatient,
         getPatientById,
+        getOrCreatePatientFromBooking,
       }}
     >
       {children}
