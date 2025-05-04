@@ -3,6 +3,7 @@ import axiosInstance from "@/api/axiosInstance";
 import { useAuth } from "@/hooks/useAuth";
 import { useSchedules } from "@/hooks/useSchedule";
 import { Booking, CreateBooking } from "@/types/booking";
+import { Patient } from "@/types/patient";
 
 // Booking API actions
 type BookingAction =
@@ -57,6 +58,7 @@ export const BookingContext = createContext<{
   deleteBooking: (id: string) => Promise<void>;
   updateBooking: (id: string, booking: CreateBooking) => Promise<void>;
   getBookingById: (id: string) => Promise<Booking>;
+  getOrCreatePatientFromBooking: (bookingId: string) => Promise<Patient>;
 } | null>(null);
 
 export const BookingProvider = ({ children }: { children: ReactNode }) => {
@@ -100,6 +102,13 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     return response.data;
   };
 
+  const getOrCreatePatientFromBooking = async (bookingId: string) => {
+    const response = await axiosInstance.post<Patient>(
+      `/bookings/${bookingId}/get-or-create-patient`
+    );
+    return response.data;
+  };
+
   return (
     <BookingContext.Provider
       value={{
@@ -108,6 +117,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         deleteBooking,
         updateBooking,
         getBookingById,
+        getOrCreatePatientFromBooking,
       }}
     >
       {children}
