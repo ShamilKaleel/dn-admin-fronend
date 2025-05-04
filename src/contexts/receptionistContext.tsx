@@ -83,7 +83,7 @@ export const ReceptionistProvider = ({ children }: { children: ReactNode }) => {
 
   const createReceptionist = async (receptionist: CreateReceptionist) => {
     const response = await axiosInstance.post<Receptionist>(
-      "/api/receptionist/create",
+      "/receptionist/create",
       receptionist
     );
     dispatch({ type: "CREATE_RECEPTIONIST", payload: response.data });
@@ -101,7 +101,7 @@ export const ReceptionistProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteReceptionist = async (id: number) => {
-    await axiosInstance.delete(`/api/receptionist/${id}`);
+    await axiosInstance.delete(`/receptionist/${id}`);
     dispatch({ type: "DELETE_RECEPTIONIST", payload: id });
   };
 

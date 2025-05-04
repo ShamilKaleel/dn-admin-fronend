@@ -11,23 +11,26 @@ import { ThemeProvider } from "./components/theme-provider";
 import { PatientProvider } from "./contexts/patientContext";
 import { PatientLogProvider } from "./contexts/patientLogContext";
 import { FeedbackProvider } from "./contexts/feedbackContext";
+import { ReceptionistProvider } from "./contexts/receptionistContext";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       <DentistProvider>
-        <ThemeProvider>
-          <ScheduleProvider>
-            <BookingProvider>
-              <PatientProvider>
-                <PatientLogProvider>
-                  <FeedbackProvider>
-                    <App />
-                  </FeedbackProvider>
-                </PatientLogProvider>
-              </PatientProvider>
-            </BookingProvider>
-          </ScheduleProvider>
-        </ThemeProvider>
+        <ReceptionistProvider>
+          <ThemeProvider>
+            <ScheduleProvider>
+              <BookingProvider>
+                <PatientProvider>
+                  <PatientLogProvider>
+                    <FeedbackProvider>
+                      <App />
+                    </FeedbackProvider>
+                  </PatientLogProvider>
+                </PatientProvider>
+              </BookingProvider>
+            </ScheduleProvider>
+          </ThemeProvider>
+        </ReceptionistProvider>
       </DentistProvider>
     </AuthProvider>
   </StrictMode>

@@ -9,7 +9,7 @@ import { ResponsiveDialog } from "@/components/responsive-dialog";
 import ScheduleForm from "@/components/forms/schedule-form";
 import DoctorForm from "@/components/forms/doctor-form";
 import { useEffect, useState } from "react";
-export default function DentistPage() {
+export default function ReceptionistPage() {
   const { receptionistState, fetchReceptionists } = useReceptionist();
   const [isLoading, setIsLoading] = useState(false);
 
