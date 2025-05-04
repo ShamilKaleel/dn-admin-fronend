@@ -27,9 +27,7 @@ import {
 
 const fetchData = async () => {
   try {
-    const response = await axiosInstance.get(
-      "http://localhost:8080/api/schedules/scheduleHistory"
-    );
+    const response = await axiosInstance.get("/schedules/scheduleHistory");
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
