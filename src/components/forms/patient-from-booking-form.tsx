@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useBooking } from "@/hooks/useBooking";
 import { Patient } from "@/types/patient";
 import { Loader2 } from "lucide-react";
 import { usePatient } from "@/hooks/usePatient";

@@ -9,7 +9,8 @@ type PatientLogAction =
   | { type: "FETCH_LOGS"; payload: PatientLog[] }
   | { type: "CREATE_LOG"; payload: PatientLog }
   | { type: "DELETE_LOG"; payload: string }
-  | { type: "UPDATE_LOG"; payload: { logID: string; newPhoto: LogPhoto } };
+  | { type: "ADD_PHOTO"; payload: { logID: string; newPhoto: LogPhoto } }
+  | { type: "DELETE_PHOTO"; payload: { logID: string; photoID: string } };
 
 // Patient Log state
 interface PatientLogState {
@@ -34,11 +35,24 @@ const patientLogReducer = (
       return {
         logs: state.logs.filter((log) => log.id !== action.payload),
       };
-    case "UPDATE_LOG":
+    case "ADD_PHOTO":
       return {
         logs: state.logs.map((log) =>
           log.id === action.payload.logID
             ? { ...log, photos: [...log.photos, action.payload.newPhoto] }
+            : log
+        ),
+      };
+    case "DELETE_PHOTO":
+      return {
+        logs: state.logs.map((log) =>
+          log.id === action.payload.logID
+            ? {
+                ...log,
+                photos: log.photos.filter(
+                  (photo) => photo.id !== action.payload.photoID
+                ),
+              }
             : log
         ),
       };
@@ -58,6 +72,11 @@ export const PatientLogContext = createContext<{
     patientID: string,
     logID: string,
     key: string
+  ) => Promise<LogPhoto>;
+  deletePhotoFromLog: (
+    patientID: string,
+    logID: string,
+    photoID: string
   ) => Promise<void>;
 } | null>(null);
 
@@ -94,7 +113,7 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
     patientID: string,
     logID: string,
     key: string
-  ) => {
+  ): Promise<LogPhoto> => {
     const response = await axiosInstance.post<LogPhoto>(
       `/patients/${patientID}/logs/${logID}/photos`,
       {
@@ -109,8 +128,29 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
 
     // Update the specific log in the state
     dispatch({
-      type: "UPDATE_LOG",
+      type: "ADD_PHOTO",
       payload: { logID, newPhoto },
+    });
+
+    return newPhoto;
+  };
+
+  const deletePhotoFromLog = async (
+    patientID: string,
+    logID: string,
+    photoID: string
+  ) => {
+    await axiosInstance.delete(
+      `/patients/${patientID}/logs/${logID}/photos/${photoID}`,
+      {
+        withCredentials: true, // Ensures cookies and credentials are sent
+      }
+    );
+
+    // Update the state to remove the deleted photo
+    dispatch({
+      type: "DELETE_PHOTO",
+      payload: { logID, photoID },
     });
   };
 
@@ -123,6 +163,7 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
         deleteLog,
         getLogById,
         addPhotoToLog,
+        deletePhotoFromLog,
       }}
     >
       {children}

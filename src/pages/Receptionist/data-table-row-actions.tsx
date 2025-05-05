@@ -1,7 +1,6 @@
 import { useState } from "react";
-
-import DocterDeleteForm from "@/components/forms/docter-delete-form";
-import DoctorEditForm from "@/components/forms/doctor-edit-form";
+import ReceptionistEditForm from "@/components/forms/reseptionist-edit-form";
+import ReceptionistDeleteForm from "@/components/forms/receptionist-delete-form";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,19 +31,18 @@ export function DataTableRowActions<TData extends WithId<string>>({
       <ResponsiveDialog
         isOpen={isEditOpen}
         setIsOpen={setIsEditOpen}
-        title="Edit Person"
+        title="Edit Reseptionist"
         className="sm:max-w-screen-md p-20"
       >
-        {/* <EditForm cardId={cardId} setIsOpen={setIsEditOpen} /> */}
-        <DoctorEditForm cardId={cardId} setIsOpen={setIsEditOpen} />
+        <ReceptionistEditForm cardId={cardId} setIsOpen={setIsEditOpen} />
       </ResponsiveDialog>
       <ResponsiveDialog
         isOpen={isDeleteOpen}
         setIsOpen={setIsDeleteOpen}
-        title="Delete Schedule"
+        title="Delete Reseptionist"
         description="Are you sure you want to delete this Schedule?"
       >
-        <DocterDeleteForm cardId={cardId} setIsOpen={setIsDeleteOpen} />
+        <ReceptionistDeleteForm cardId={cardId} setIsOpen={setIsDeleteOpen} />
       </ResponsiveDialog>
 
       <DropdownMenu>
