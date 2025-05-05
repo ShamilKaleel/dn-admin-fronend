@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLog } from "@/hooks/useLog";
+import axiosInstance from "@/api/axiosInstance";
 interface AddImageComponentProps {
   setIsOpen: (isOpen: boolean) => void;
   patientID: string;
@@ -45,11 +46,11 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
       // Step 1: Get Pre-signed URL from the backend
 
       console.log(selectedFile.name, selectedFile.type);
-      const presignedUrlResponse = await axios.post<{
+      const presignedUrlResponse = await axiosInstance.post<{
         url: string;
         key: string;
       }>(
-        `http://localhost:8080/api/s3/generate-presigned-url`,
+        `/api/s3/generate-presigned-url`,
         {
           fileName: selectedFile.name,
           fileType: selectedFile.type,
