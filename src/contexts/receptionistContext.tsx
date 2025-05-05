@@ -37,7 +37,7 @@ const receptionistReducer = (
     case "DELETE_RECEPTIONIST":
       return {
         receptionists: state.receptionists.filter(
-          (receptionist) => receptionist.id !== String(action.payload)
+          (receptionist) => receptionist.id !== action.payload
         ),
       };
     default:

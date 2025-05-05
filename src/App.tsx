@@ -26,6 +26,8 @@ import PatientLogPage from "./pages/PatientLog/PatientLogBookPage";
 import PatientLogDetails from "./pages/PatientLog/PatientLogPage";
 import { hasAccess } from "@/lib/roleAccess";
 import RoleRoute from "./components/RoleRoute";
+import ProfilePage from "@/pages/Profile/ProfilePage";
+
 //test git
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { authState, isLording } = useAuth();
@@ -113,9 +115,11 @@ export default function App() {
               <RoleRoute element={<ContactUsPage />} path="/contact-us" />
             }
           />
+          {/* Profile Page - Accessible to all authenticated users without role restrictions */}
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
-        {/* Public Routes only for testiong */}
+        {/* Public Routes only for testing */}
         <Route path="/booking" element={<DataTableDemo />} />
         <Route path="/test" element={<SchedulePage />} />
         <Route

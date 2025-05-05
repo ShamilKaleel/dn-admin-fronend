@@ -8,6 +8,7 @@ import {
   Stethoscope,
   NotebookPen,
   BookUser,
+  UserCircle,
 } from "lucide-react";
 
 const navLinks = [
@@ -55,6 +56,11 @@ const navLinks = [
     title: "Contact Us",
     path: "/contact-us",
     icon: <BookUser size={20} />,
+  },
+  {
+    title: "My Profile",
+    path: "/profile",
+    icon: <UserCircle size={20} />,
   },
 ];
 
