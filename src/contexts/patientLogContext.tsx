@@ -9,7 +9,8 @@ type PatientLogAction =
   | { type: "FETCH_LOGS"; payload: PatientLog[] }
   | { type: "CREATE_LOG"; payload: PatientLog }
   | { type: "DELETE_LOG"; payload: string }
-  | { type: "UPDATE_LOG"; payload: { logID: string; newPhoto: LogPhoto } };
+  | { type: "UPDATE_LOG"; payload: { logID: string; newPhoto: LogPhoto } }
+  | { type: "DELETE_PHOTO"; payload: { logID: string; photoID: string } };
 
 // Patient Log state
 interface PatientLogState {
@@ -42,6 +43,19 @@ const patientLogReducer = (
             : log
         ),
       };
+    case "DELETE_PHOTO":
+      return {
+        logs: state.logs.map((log) =>
+          log.id === action.payload.logID
+            ? {
+                ...log,
+                photos: log.photos.filter(
+                  (photo) => photo.id !== action.payload.photoID
+                ),
+              }
+            : log
+        ),
+      };
     default:
       return state;
   }
@@ -58,6 +72,11 @@ export const PatientLogContext = createContext<{
     patientID: string,
     logID: string,
     key: string
+  ) => Promise<void>;
+  deletePhotoFromLog: (
+    patientID: string,
+    logID: string,
+    photoID: string
   ) => Promise<void>;
 } | null>(null);
 
@@ -114,6 +133,25 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const deletePhotoFromLog = async (
+    patientID: string,
+    logID: string,
+    photoID: string
+  ) => {
+    await axiosInstance.delete(
+      `/patients/${patientID}/logs/${logID}/photos/${photoID}`,
+      {
+        withCredentials: true, // Ensures cookies and credentials are sent
+      }
+    );
+
+    // Update the state to remove the deleted photo
+    dispatch({
+      type: "DELETE_PHOTO",
+      payload: { logID, photoID },
+    });
+  };
+
   return (
     <PatientLogContext.Provider
       value={{
@@ -123,6 +161,7 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
         deleteLog,
         getLogById,
         addPhotoToLog,
+        deletePhotoFromLog,
       }}
     >
       {children}
