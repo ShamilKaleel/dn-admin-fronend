@@ -2,7 +2,6 @@ import { createContext, useReducer, ReactNode, useEffect } from "react";
 import axiosInstance from "@/api/axiosInstance";
 import { PatientLog, CreateLog } from "@/types/patient-log";
 import { LogPhoto } from "@/types/patient-log";
-import { useAuth } from "@/hooks/useAuth";
 
 // Actions for Patient Log
 type PatientLogAction =
