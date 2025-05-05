@@ -15,6 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import { ChartLine } from "lucide-react";
 export default function PatientPage() {
   const { patientState, fetchPatients } = usePatient();
   const [isOpen, setIsOpen] = useState(false);
@@ -39,66 +41,23 @@ export default function PatientPage() {
         <Tabs defaultValue="patients">
           <TabsList className="mb-4">
             <TabsTrigger value="patients">Patient List</TabsTrigger>
-            <TabsTrigger value="booking-patient">
-              Patient from Booking
-            </TabsTrigger>
+            <TabsTrigger value="Analytics">Analytics</TabsTrigger>
           </TabsList>
           <TabsContent value="patients">
             <DataTable columns={columns} data={patientState.patients} />
           </TabsContent>
-          <TabsContent value="booking-patient">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Get Patient from Booking ID</CardTitle>
-                  <CardDescription>
-                    Enter a booking ID to retrieve or create a patient record
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <PatientFromBookingForm
-                    onPatientRetrieved={(patient) => {
-                      setRetrievedPatient(patient);
-                      fetchPatients(); // Refresh patient list
-                    }}
-                  />
-                </CardContent>
-              </Card>
-
-              {retrievedPatient && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Retrieved Patient</CardTitle>
-                    <CardDescription>
-                      Patient details retrieved from booking
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold">Name</h3>
-                      <p>{retrievedPatient.name}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Email</h3>
-                      <p>{retrievedPatient.email}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">NIC</h3>
-                      <p>{retrievedPatient.nic}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Contact Numbers</h3>
-                      <ul className="list-disc pl-5">
-                        {retrievedPatient.contactNumbers.map(
-                          (number, index) => (
-                            <li key={index}>{number}</li>
-                          )
-                        )}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+          <TabsContent value="Analytics">
+            <div className="py-12 flex flex-col items-center justify-center text-center">
+              <div className="rounded-full bg-primary/10 p-4 mb-4">
+                <ChartLine className="h-12 w-12 text-primary" />
+              </div>
+              <h3 className="text-xl font-medium mb-2">
+                Analytics Coming Soon
+              </h3>
+              <p className="text-muted-foreground max-w-md">
+                Patient analytics features are currently in development. You'll
+                soon be able to view treatment trends and patterns here.
+              </p>
             </div>
           </TabsContent>
         </Tabs>
