@@ -50,13 +50,13 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
         url: string;
         key: string;
       }>(
-        `/api/s3/generate-presigned-url`,
+        `/s3/generate-presigned-url`,
         {
           fileName: selectedFile.name,
           fileType: selectedFile.type,
         },
         {
-          withCredentials: true, // Ensures cookies and credentials are sent
+          withCredentials: true,
         }
       );
 
