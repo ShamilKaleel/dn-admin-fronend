@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLog } from "@/hooks/useLog";
 import axiosInstance from "@/api/axiosInstance";
-import { LogPhoto } from "@/types/patient-log";
 import { Loader2 } from "lucide-react";
 interface AddImageComponentProps {
   setIsOpen: (isOpen: boolean) => void;
