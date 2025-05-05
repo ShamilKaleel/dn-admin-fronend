@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { BiFirstPage, BiLastPage } from "react-icons/bi";
 
-import { useTheme } from "@/components/theme-provider";
 import PaginationSelection from "./PaginationSelection";
 import { useEffect, useState } from "react";
 import { Table } from "@tanstack/react-table";
