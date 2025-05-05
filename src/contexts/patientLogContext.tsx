@@ -9,7 +9,7 @@ type PatientLogAction =
   | { type: "FETCH_LOGS"; payload: PatientLog[] }
   | { type: "CREATE_LOG"; payload: PatientLog }
   | { type: "DELETE_LOG"; payload: string }
-  | { type: "UPDATE_LOG"; payload: { logID: string; newPhoto: LogPhoto } }
+  | { type: "ADD_PHOTO"; payload: { logID: string; newPhoto: LogPhoto } }
   | { type: "DELETE_PHOTO"; payload: { logID: string; photoID: string } };
 
 // Patient Log state
@@ -35,7 +35,7 @@ const patientLogReducer = (
       return {
         logs: state.logs.filter((log) => log.id !== action.payload),
       };
-    case "UPDATE_LOG":
+    case "ADD_PHOTO":
       return {
         logs: state.logs.map((log) =>
           log.id === action.payload.logID
@@ -72,7 +72,7 @@ export const PatientLogContext = createContext<{
     patientID: string,
     logID: string,
     key: string
-  ) => Promise<void>;
+  ) => Promise<LogPhoto>;
   deletePhotoFromLog: (
     patientID: string,
     logID: string,
@@ -113,7 +113,7 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
     patientID: string,
     logID: string,
     key: string
-  ) => {
+  ): Promise<LogPhoto> => {
     const response = await axiosInstance.post<LogPhoto>(
       `/patients/${patientID}/logs/${logID}/photos`,
       {
@@ -128,9 +128,11 @@ export const PatientLogProvider = ({ children }: { children: ReactNode }) => {
 
     // Update the specific log in the state
     dispatch({
-      type: "UPDATE_LOG",
+      type: "ADD_PHOTO",
       payload: { logID, newPhoto },
     });
+
+    return newPhoto;
   };
 
   const deletePhotoFromLog = async (

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PatientLog } from "@/types/patient-log";
 import PatientLogHeader from "./patient-log-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Camera, ExternalLink, Info, Trash2, X } from "lucide-react";
+import { Camera, ExternalLink, Info, Trash2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -30,18 +30,31 @@ interface PatientLoggProps {
 }
 
 const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
-  // Get deletePhotoFromLog function from context
-  const { deletePhotoFromLog } = useLog();
+  // Get functions from context
+  const { deletePhotoFromLog, getLogById } = useLog();
+
+  // State to track the current log data
+  const [currentLog, setCurrentLog] = useState<PatientLog>(log);
 
   // State for tracking loading images
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
-  }>(
-    log.photos.reduce((acc, photo) => {
-      acc[photo.id] = true; // Initially, all images are loading
-      return acc;
-    }, {} as { [key: string]: boolean })
-  );
+  }>({});
+
+  // Initialize loading states when photos change
+  useEffect(() => {
+    setLoadingStates(
+      currentLog.photos.reduce((acc, photo) => {
+        acc[photo.id] = true; // Initially, all images are loading
+        return acc;
+      }, {} as { [key: string]: boolean })
+    );
+  }, [currentLog.photos]);
+
+  // Refresh log data when log prop changes
+  useEffect(() => {
+    setCurrentLog(log);
+  }, [log]);
 
   // State for delete confirmation dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -67,7 +80,14 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
     if (!photoToDelete) return;
 
     try {
-      await deletePhotoFromLog(patientID, log.id, photoToDelete);
+      await deletePhotoFromLog(patientID, currentLog.id, photoToDelete);
+
+      // Update the local state by filtering out the deleted photo
+      setCurrentLog((prev) => ({
+        ...prev,
+        photos: prev.photos.filter((photo) => photo.id !== photoToDelete),
+      }));
+
       toast({
         title: "Photo deleted",
         description: "The photo has been successfully removed.",
@@ -80,6 +100,14 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
         description: "Failed to delete the photo. Please try again.",
         variant: "destructive",
       });
+
+      // Refresh the log data from the server in case of an error
+      try {
+        const refreshedLog = await getLogById(patientID, currentLog.id);
+        setCurrentLog(refreshedLog);
+      } catch (refreshError) {
+        console.error("Failed to refresh log data:", refreshError);
+      }
     } finally {
       setIsDeleteDialogOpen(false);
       setPhotoToDelete(null);
@@ -88,7 +116,7 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
 
   return (
     <>
-      <PatientLogHeader patientID={patientID} logID={log.id} />
+      <PatientLogHeader patientID={patientID} logID={currentLog.id} />
       <div className="w-full py-4">
         <div className="space-y-6">
           {/* Treatment Details Card */}
@@ -101,14 +129,14 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
                     variant="outline"
                     className="text-primary bg-primary/10 hover:bg-primary/20"
                   >
-                    {log.actionType}
+                    {currentLog.actionType}
                   </Badge>
                 </div>
 
                 <div className="border-l-4 border-primary/60 pl-4 py-2 bg-muted/50 rounded-r-md">
                   <p className="text-sm text-muted-foreground">Description</p>
                   <p className="font-medium">
-                    {log.description || "No description provided."}
+                    {currentLog.description || "No description provided."}
                   </p>
                 </div>
 
@@ -117,12 +145,12 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
                     <p className="text-sm text-muted-foreground">
                       Attending Dentist
                     </p>
-                    <p className="font-medium">Dr. {log.dentistName}</p>
+                    <p className="font-medium">Dr. {currentLog.dentistName}</p>
                   </div>
                   <div className="bg-muted/30 p-3 rounded-md">
                     <p className="text-sm text-muted-foreground">Timestamp</p>
                     <p className="font-medium">
-                      {new Date(log.timestamp).toLocaleString()}
+                      {new Date(currentLog.timestamp).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -152,9 +180,9 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
                 </TooltipProvider>
               </div>
 
-              {log.photos.length > 0 ? (
+              {currentLog.photos.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {log.photos.map((photo) => (
+                  {currentLog.photos.map((photo) => (
                     <div
                       key={photo.id}
                       className="group relative aspect-square rounded-md overflow-hidden border"

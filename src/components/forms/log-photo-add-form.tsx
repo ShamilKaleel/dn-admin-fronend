@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { ColumnGrouping } from "@tanstack/react-table";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLog } from "@/hooks/useLog";
 import axiosInstance from "@/api/axiosInstance";
+import { LogPhoto } from "@/types/patient-log";
+import { Loader2 } from "lucide-react";
 interface AddImageComponentProps {
   setIsOpen: (isOpen: boolean) => void;
   patientID: string;
@@ -20,15 +21,16 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
-  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { toast } = useToast();
   const { addPhotoToLog } = useLog();
+
   // Handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      setErrorMessage(""); // Clear any previous errors
     }
   };
 
@@ -44,8 +46,6 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
 
     try {
       // Step 1: Get Pre-signed URL from the backend
-
-      console.log(selectedFile.name, selectedFile.type);
       const presignedUrlResponse = await axiosInstance.post<{
         url: string;
         key: string;
@@ -55,9 +55,8 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
       });
 
       const { url, key } = presignedUrlResponse.data;
-      console.log(url, key);
+
       // Step 2: Upload the file to S3
-      console.log(selectedFile);
       await axios.put(url, selectedFile, {
         headers: {
           "Content-Type": selectedFile.type,
@@ -65,50 +64,62 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
         withCredentials: true, // Ensures cookies and credentials are sent
       });
 
-      // Step 3: Store the S3 key in the backend
-      console.log();
+      // Step 3: Store the S3 key in the backend and update state
       await addPhotoToLog(patientID, logID, key);
 
       toast({
         title: "Image Uploaded",
         description: "Image has been uploaded successfully",
       });
-      setUploadSuccess("File uploaded successfully!");
+
+      // Clear the selection
+      setSelectedFile(null);
+
+      // Close the dialog
+      setIsOpen(false);
     } catch (error: any) {
       console.error("Upload failed:", error);
       toast({
-        title: "Error creating log",
+        title: "Error uploading image",
         description:
-          error.response?.data?.details.error ||
-          "An error occurred while creating the log",
+          error.response?.data?.details?.error ||
+          "An error occurred while uploading the image",
         variant: "destructive",
       });
       setErrorMessage("Upload failed. Please try again.");
     } finally {
       setUploading(false);
-      setIsOpen(false);
     }
   };
 
   return (
-    <div className="  px-5 md:px-0  rounded-lg">
+    <div className="px-5 md:px-0 rounded-lg">
       <h2 className="text-lg font-semibold">Upload Image</h2>
       <Input
         type="file"
         onChange={handleFileChange}
         accept="image/*"
         className="mt-2"
+        disabled={uploading}
       />
       <Button
         onClick={handleUpload}
-        disabled={uploading}
-        className="mt-2 px-4 py-2 "
+        disabled={uploading || !selectedFile}
+        className="mt-4 w-full"
       >
-        {uploading ? "Uploading..." : "Upload Image"}
+        {uploading ? (
+          <span className="flex items-center">
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Uploading...
+          </span>
+        ) : (
+          "Upload Image"
+        )}
       </Button>
 
-      {uploadSuccess && <p className="text-green-500 mt-2">{uploadSuccess}</p>}
-      {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
+      {errorMessage && (
+        <p className="text-red-500 mt-2 text-sm">{errorMessage}</p>
+      )}
     </div>
   );
 };
