@@ -4,13 +4,25 @@ import PatientLogHeader from "./patient-log-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Camera, ExternalLink, Info } from "lucide-react";
+import { Camera, ExternalLink, Info, Trash2, X } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useLog } from "@/hooks/useLog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 interface PatientLoggProps {
   log: PatientLog;
@@ -18,7 +30,10 @@ interface PatientLoggProps {
 }
 
 const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
-  // State to track loading for each image
+  // Get deletePhotoFromLog function from context
+  const { deletePhotoFromLog } = useLog();
+
+  // State for tracking loading images
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>(
@@ -28,12 +43,47 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
     }, {} as { [key: string]: boolean })
   );
 
+  // State for delete confirmation dialog
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
+
   // Function to handle image load
   const handleImageLoad = (photoId: string) => {
     setLoadingStates((prev) => ({
       ...prev,
       [photoId]: false, // Set loading to false when image is loaded
     }));
+  };
+
+  // Function to open delete confirmation dialog
+  const openDeleteDialog = (photoId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the parent click event (image open)
+    setPhotoToDelete(photoId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  // Function to handle photo deletion
+  const handleDeletePhoto = async () => {
+    if (!photoToDelete) return;
+
+    try {
+      await deletePhotoFromLog(patientID, log.id, photoToDelete);
+      toast({
+        title: "Photo deleted",
+        description: "The photo has been successfully removed.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Failed to delete photo:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setPhotoToDelete(null);
+    }
   };
 
   return (
@@ -94,7 +144,9 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
                       <Info className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Click on any image to view in full size</p>
+                      <p>
+                        Click on image to view full size, or hover for options
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -120,14 +172,28 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
                           loadingStates[photo.id] ? "opacity-0" : "opacity-100"
                         }`}
                         onLoad={() => handleImageLoad(photo.id)}
+                        onClick={() => window.open(photo.url, "_blank")}
                       />
 
-                      {/* Hover Overlay */}
-                      <div
-                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                        onClick={() => window.open(photo.url, "_blank")}
-                      >
-                        <ExternalLink className="h-6 w-6 text-white" />
+                      {/* Hover Controls Overlay */}
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* View Image Button */}
+                        <button
+                          className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center mx-1 hover:bg-white/30 transition-colors"
+                          onClick={() => window.open(photo.url, "_blank")}
+                          aria-label="View full image"
+                        >
+                          <ExternalLink className="h-4 w-4 text-white" />
+                        </button>
+
+                        {/* Delete Image Button */}
+                        <button
+                          className="h-8 w-8 rounded-full bg-red-500/70 flex items-center justify-center mx-1 hover:bg-red-500/90 transition-colors"
+                          onClick={(e) => openDeleteDialog(photo.id, e)}
+                          aria-label="Delete image"
+                        >
+                          <Trash2 className="h-4 w-4 text-white" />
+                        </button>
                       </div>
 
                       {/* Optional Description */}
@@ -154,6 +220,31 @@ const PatientLogg: React.FC<PatientLoggProps> = ({ log, patientID }) => {
           </Card>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Image</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this image? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeletePhoto}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
