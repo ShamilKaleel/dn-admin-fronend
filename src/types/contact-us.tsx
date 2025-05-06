@@ -5,4 +5,5 @@ export interface ContactUs {
   contactNumber: string;
   subject: string;
   message: string;
+  replySent: boolean;
 }

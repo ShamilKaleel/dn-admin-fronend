@@ -9,7 +9,6 @@ import SignupPage from "@/pages/Auth/SignupPage";
 import NotFoundPage from "@/pages/Auth/NotFoundPage";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardPage from "@/pages/Dashboard/DashboardPage";
-import AdminPage from "@/pages/Admin/AdminPage";
 import DentistPage from "@/pages/Dentist/DentistPage";
 import PatientPage from "@/pages/Patient/PatientPage";
 import ReceptionistPage from "@/pages/Receptionist/ReceptionistPage";

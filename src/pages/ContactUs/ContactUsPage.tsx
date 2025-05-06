@@ -9,7 +9,6 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Send,
   Reply,
 } from "lucide-react";
 import axiosInstance from "@/api/axiosInstance";
@@ -46,11 +45,6 @@ const ContactUsAdminPage = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [sortCriteria, setSortCriteria] = useState("newest");
   const { toast } = useToast();
-
-  // Mock data for responded contacts - this would be from an API in a real implementation
-  const [respondedContacts, setRespondedContacts] = useState<
-    Set<string | number>
-  >(new Set());
 
   useEffect(() => {
     fetchContacts();
@@ -102,14 +96,14 @@ const ContactUsAdminPage = () => {
       );
     }
 
-    // Apply tab filter
+    // Apply tab filter based on replySent status
     if (activeTab === "responded") {
-      result = result.filter((contact) => respondedContacts.has(contact.id));
+      result = result.filter((contact) => contact.replySent);
     } else if (activeTab === "new") {
-      result = result.filter((contact) => !respondedContacts.has(contact.id));
+      result = result.filter((contact) => !contact.replySent);
     }
 
-    // Apply sorting - FIXED to handle both string and number IDs
+    // Apply sorting - handling both string and number IDs
     if (sortCriteria === "newest") {
       // Sort by ID, safely handling both string and number IDs
       result = [...result].sort((a, b) => {
@@ -142,11 +136,13 @@ const ContactUsAdminPage = () => {
   };
 
   const handleReplySuccess = (contactId: string | number): void => {
-    setRespondedContacts((prev: Set<string | number>) => {
-      const newSet: Set<string | number> = new Set(prev);
-      newSet.add(contactId);
-      return newSet;
-    });
+    // Update the local state to mark the contact as replied
+    setContactUs((prevContacts) =>
+      prevContacts.map((contact) =>
+        contact.id === contactId ? { ...contact, replySent: true } : contact
+      )
+    );
+
     setIsDialogOpen(false);
     toast({
       title: "Reply Sent",
@@ -243,7 +239,7 @@ const ContactUsAdminPage = () => {
               <TabsTrigger value="new">
                 New
                 <Badge variant="outline" className="ml-2 bg-primary text-white">
-                  {contactUs.filter((c) => !respondedContacts.has(c.id)).length}
+                  {contactUs.filter((c) => !c.replySent).length}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="responded">Responded</TabsTrigger>
@@ -253,21 +249,18 @@ const ContactUsAdminPage = () => {
               <ContactList
                 contacts={filteredContacts}
                 onSelect={handleContactSelect}
-                respondedContacts={respondedContacts}
               />
             </TabsContent>
             <TabsContent value="new" className="m-0">
               <ContactList
                 contacts={filteredContacts}
                 onSelect={handleContactSelect}
-                respondedContacts={respondedContacts}
               />
             </TabsContent>
             <TabsContent value="responded" className="m-0">
               <ContactList
                 contacts={filteredContacts}
                 onSelect={handleContactSelect}
-                respondedContacts={respondedContacts}
               />
             </TabsContent>
           </Tabs>
@@ -296,10 +289,7 @@ const ContactUsAdminPage = () => {
                     variant="outline"
                     className="ml-2 font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300"
                   >
-                    {
-                      contactUs.filter((c) => !respondedContacts.has(c.id))
-                        .length
-                    }
+                    {contactUs.filter((c) => !c.replySent).length}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
@@ -311,7 +301,7 @@ const ContactUsAdminPage = () => {
                     variant="outline"
                     className="ml-2 font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
                   >
-                    {[...respondedContacts].length}
+                    {contactUs.filter((c) => c.replySent).length}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
@@ -322,7 +312,8 @@ const ContactUsAdminPage = () => {
                   <Badge variant="outline" className="ml-2 font-medium">
                     {contactUs.length
                       ? Math.round(
-                          ([...respondedContacts].length / contactUs.length) *
+                          (contactUs.filter((c) => c.replySent).length /
+                            contactUs.length) *
                             100
                         ) + "%"
                       : "0%"}
@@ -387,11 +378,9 @@ const ContactUsAdminPage = () => {
 const ContactList = ({
   contacts,
   onSelect,
-  respondedContacts,
 }: {
   contacts: ContactUs[];
   onSelect: (id: string | number) => void;
-  respondedContacts: Set<string | number>;
 }) => {
   if (contacts.length === 0) {
     return null;
@@ -400,12 +389,7 @@ const ContactList = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {contacts.map((contact) => (
-        <ContactCard
-          key={contact.id}
-          contact={contact}
-          onSelect={onSelect}
-          isResponded={respondedContacts.has(contact.id)}
-        />
+        <ContactCard key={contact.id} contact={contact} onSelect={onSelect} />
       ))}
     </div>
   );
@@ -415,18 +399,16 @@ const ContactList = ({
 const ContactCard = ({
   contact,
   onSelect,
-  isResponded,
 }: {
   contact: ContactUs;
   onSelect: (id: string | number) => void;
-  isResponded: boolean;
 }) => {
   return (
     <Card
       className={`
         cursor-pointer transition-all duration-300 h-full flex flex-col
         ${
-          isResponded
+          contact.replySent
             ? "border-green-200 dark:border-green-800"
             : "hover:border-primary"
         }
@@ -440,7 +422,7 @@ const ContactCard = ({
             <User className="h-5 w-5 text-gray-500 mr-2 shrink-0" />
             <h3 className="font-medium truncate">{contact.name}</h3>
           </div>
-          {isResponded && (
+          {contact.replySent && (
             <Badge
               variant="secondary"
               className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
@@ -549,18 +531,21 @@ const ContactUsReplyForm = ({
     fetchContactDetails();
   }, [selectedContactUsID]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!reply.trim() || !selectedContactUsID) return;
 
     try {
       setSubmitting(true);
-      axiosInstance
-        .put(`/contacts/sendReply/${selectedContactUsID}`, reply)
-        .then(() => {
-          if (selectedContactUsID) {
-            onReplySuccess(selectedContactUsID);
-          }
-        });
+      // The API returns void but the operation is successful
+      await axiosInstance.put(
+        `/contacts/sendReply/${selectedContactUsID}`,
+        reply
+      );
+
+      // Call the success handler with the contact ID
+      if (selectedContactUsID) {
+        onReplySuccess(selectedContactUsID);
+      }
     } catch (error) {
       toast({
         title: "Error",
