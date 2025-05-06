@@ -39,7 +39,7 @@ export default function PatientPage() {
 
       <div className="pb-5 px-2 lg:px-0">
         <Tabs defaultValue="patients">
-          <TabsList className="mb-4">
+          <TabsList className="">
             <TabsTrigger value="patients">Patient List</TabsTrigger>
             <TabsTrigger value="Analytics">Analytics</TabsTrigger>
           </TabsList>
