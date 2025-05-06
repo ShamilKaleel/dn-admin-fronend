@@ -118,9 +118,6 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
-        {/* Public Routes only for testing */}
-        <Route path="/booking" element={<DataTableDemo />} />
-        <Route path="/test" element={<SchedulePage />} />
         <Route
           path="/forget-password"
           element={
