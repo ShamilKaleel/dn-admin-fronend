@@ -24,7 +24,6 @@ import FeedbackPage from "@/pages/Feedback/FeedbackPage";
 import ContactUsPage from "@/pages/ContactUs/ContactUsPage";
 import PatientLogPage from "./pages/PatientLog/PatientLogBookPage";
 import PatientLogDetails from "./pages/PatientLog/PatientLogPage";
-import { hasAccess } from "@/lib/roleAccess";
 import RoleRoute from "./components/RoleRoute";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 
