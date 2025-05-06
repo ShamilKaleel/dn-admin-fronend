@@ -6,21 +6,47 @@ import { Label } from "@/components/ui/label";
 import { ContactUs } from "@/types/contact-us";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { User, Mail, Phone, MessageSquare } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ContactUsReplyFormProps {
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: (isOpen: boolean) => void;
   selectedContactUsID: string | number | null;
+  onReplySuccess: (contactId: string | number) => void;
 }
 
 const ContactUsReplyForm: React.FC<ContactUsReplyFormProps> = ({
   setIsOpen,
   selectedContactUsID,
+  onReplySuccess,
 }) => {
-  const [reply, setReply] = useState<string>("");
+  const [reply, setReply] = useState("");
   const [contactDetails, setContactDetails] = useState<ContactUs | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Template responses to save time
+  const templates = [
+    {
+      label: "General Thank You",
+      text: "Thank you for reaching out to DN Dental Clinic. We appreciate your message and will address your inquiry as promptly as possible.",
+    },
+    {
+      label: "Appointment Confirmation",
+      text: "Thank you for your interest in scheduling an appointment with DN Dental Clinic. We'd be happy to assist you. Please provide your preferred date and time, and we'll check our availability.",
+    },
+    {
+      label: "Fee Inquiry",
+      text: "Thank you for your inquiry about our fees. At DN Dental Clinic, we strive to provide transparent pricing. For your specific treatment needs, we recommend scheduling a consultation to provide an accurate estimate.",
+    },
+  ];
 
   useEffect(() => {
     const fetchContactDetails = async () => {
@@ -28,7 +54,7 @@ const ContactUsReplyForm: React.FC<ContactUsReplyFormProps> = ({
 
       try {
         setLoading(true);
-        const response = await axiosInstance.get<ContactUs>(
+        const response = await axiosInstance.get(
           `/contacts/${selectedContactUsID}`
         );
         setContactDetails(response.data);
@@ -46,23 +72,21 @@ const ContactUsReplyForm: React.FC<ContactUsReplyFormProps> = ({
     fetchContactDetails();
   }, [selectedContactUsID]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!reply.trim() || !selectedContactUsID) return;
 
     try {
       setSubmitting(true);
+      // The API returns void but the operation is successful
       await axiosInstance.put(
         `/contacts/sendReply/${selectedContactUsID}`,
         reply
       );
 
-      toast({
-        title: "Success",
-        description: "Reply sent successfully!",
-      });
-
-      setIsOpen(false);
+      // Call the success handler with the contact ID
+      if (selectedContactUsID) {
+        onReplySuccess(selectedContactUsID);
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -74,9 +98,21 @@ const ContactUsReplyForm: React.FC<ContactUsReplyFormProps> = ({
     }
   };
 
+  const applyTemplate = (templateText: string): void => {
+    // Add personalization if we have contact details
+    if (contactDetails) {
+      const personalizedTemplate = `Dear ${contactDetails.name},\n\n${templateText}\n\nBest regards,\nDN Dental Clinic Team`;
+      setReply(personalizedTemplate);
+    } else {
+      setReply(templateText);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center p-4">Loading contact details...</div>
+      <div className="flex justify-center items-center p-6 h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
@@ -84,59 +120,81 @@ const ContactUsReplyForm: React.FC<ContactUsReplyFormProps> = ({
     <div className="p-4">
       {contactDetails && (
         <div className="mb-6 space-y-4">
-          <div className="border-b pb-3">
-            <h3 className="text-lg font-medium">Contact Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-              <div>
-                <span className="text-sm font-medium text-gray-500">Name:</span>
-                <p className="truncate">{contactDetails.name}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">
-                  Email:
+          <div className="border-b pb-4">
+            <div className="flex items-center mb-2">
+              <User className="h-5 w-5 text-gray-500 mr-2" />
+              <h3 className="text-lg font-medium">{contactDetails.name}</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="flex items-center">
+                <Mail className="h-4 w-4 text-gray-500 mr-2 shrink-0" />
+                <span className="text-sm text-gray-600 truncate">
+                  {contactDetails.email}
                 </span>
-                <p className="truncate">{contactDetails.email}</p>
               </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">
-                  Contact Number:
+
+              <div className="flex items-center">
+                <Phone className="h-4 w-4 text-gray-500 mr-2 shrink-0" />
+                <span className="text-sm text-gray-600 truncate">
+                  {contactDetails.contactNumber}
                 </span>
-                <p className="truncate">{contactDetails.contactNumber}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500">
-                  Subject:
-                </span>
-                <p className="truncate">{contactDetails.subject}</p>
               </div>
             </div>
           </div>
 
           <div>
-            <h4 className="text-md font-medium mb-2">Message:</h4>
-            <ScrollArea className="">
-              <div className="bg-muted p-3 rounded-md w-full break-words">
-                <p className="whitespace-pre-wrap">{contactDetails.message}</p>
-              </div>
-            </ScrollArea>
+            <div className="flex items-center mb-2">
+              <MessageSquare className="h-5 w-5 text-gray-500 mr-2" />
+              <h4 className="font-medium">Subject: {contactDetails.subject}</h4>
+            </div>
+
+            <div className="bg-muted p-4 rounded-md mb-4">
+              <ScrollArea className="h-40">
+                <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                  {contactDetails.message}
+                </p>
+              </ScrollArea>
+            </div>
           </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="reply">Your Reply</Label>
+      <div className="space-y-4">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <Label htmlFor="reply" className="text-base font-medium">
+              Your Reply
+            </Label>
+            <Select
+              onValueChange={(value) => {
+                const template = templates.find((t) => t.label === value);
+                if (template) applyTemplate(template.text);
+              }}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Use template" />
+              </SelectTrigger>
+              <SelectContent>
+                {templates.map((template) => (
+                  <SelectItem key={template.label} value={template.label}>
+                    {template.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <Textarea
             id="reply"
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             placeholder="Type your reply here..."
-            className="min-h-32 resize-none"
-            required
+            className="min-h-40 resize-none"
           />
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 pt-2 border-t">
           <Button
             type="button"
             variant="outline"
@@ -145,11 +203,23 @@ const ContactUsReplyForm: React.FC<ContactUsReplyFormProps> = ({
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={submitting || !reply.trim()}>
-            {submitting ? "Sending..." : "Send Reply"}
+          <Button
+            type="button"
+            disabled={submitting || !reply.trim()}
+            className="min-w-24"
+            onClick={handleSubmit}
+          >
+            {submitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Sending...
+              </>
+            ) : (
+              <>Send Reply</>
+            )}
           </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
