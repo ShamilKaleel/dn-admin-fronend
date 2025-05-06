@@ -62,10 +62,10 @@ export default function App() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route
+          {/* <Route
             path="/admin"
             element={<RoleRoute element={<AdminPage />} path="/admin" />}
-          />
+          /> */}
           <Route
             path="/dentist"
             element={<RoleRoute element={<DentistPage />} path="/dentist" />}
