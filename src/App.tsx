@@ -8,9 +8,7 @@ import LoginPage from "@/pages/Auth/LoginPage";
 import SignupPage from "@/pages/Auth/SignupPage";
 import NotFoundPage from "@/pages/Auth/NotFoundPage";
 import { useAuth } from "@/hooks/useAuth";
-import DataTableDemo from "@/pages/TestingPages/DataTableDemo";
 import DashboardPage from "@/pages/Dashboard/DashboardPage";
-import AdminPage from "@/pages/Admin/AdminPage";
 import DentistPage from "@/pages/Dentist/DentistPage";
 import PatientPage from "@/pages/Patient/PatientPage";
 import ReceptionistPage from "@/pages/Receptionist/ReceptionistPage";
@@ -24,7 +22,6 @@ import FeedbackPage from "@/pages/Feedback/FeedbackPage";
 import ContactUsPage from "@/pages/ContactUs/ContactUsPage";
 import PatientLogPage from "./pages/PatientLog/PatientLogBookPage";
 import PatientLogDetails from "./pages/PatientLog/PatientLogPage";
-import { hasAccess } from "@/lib/roleAccess";
 import RoleRoute from "./components/RoleRoute";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 
@@ -64,10 +61,10 @@ export default function App() {
           }
         >
           <Route index element={<DashboardPage />} />
-          <Route
+          {/* <Route
             path="/admin"
             element={<RoleRoute element={<AdminPage />} path="/admin" />}
-          />
+          /> */}
           <Route
             path="/dentist"
             element={<RoleRoute element={<DentistPage />} path="/dentist" />}
@@ -119,9 +116,6 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
-        {/* Public Routes only for testing */}
-        <Route path="/booking" element={<DataTableDemo />} />
-        <Route path="/test" element={<SchedulePage />} />
         <Route
           path="/forget-password"
           element={

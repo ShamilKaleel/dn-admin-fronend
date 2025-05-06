@@ -17,11 +17,11 @@ const navLinks = [
     path: "/",
     icon: <Home size={20} />, // Icon with size
   },
-  {
-    title: "Admin",
-    path: "/admin",
-    icon: <Shield size={20} />,
-  },
+  // {
+  //   title: "Admin",
+  //   path: "/admin",
+  //   icon: <Shield size={20} />,
+  // },
   {
     title: "Dentist",
     path: "/dentist",
