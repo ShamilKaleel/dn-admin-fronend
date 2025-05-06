@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { useFeedback } from "@/hooks/useFeedback";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -18,23 +17,20 @@ import {
 import {
   BarChart as RechartsBarChart,
   Bar,
-  PieChart as RechartsPieChart,
-  Pie,
   Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Button } from "@/components/ui/button";
+
 import StarRating from "@/pages/Feedback/star-rating";
 
 const FeedbackAnalytics = () => {
   const { feedbackState, fetchFeedbacks } = useFeedback();
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("overview");
+
   const feedbacks = feedbackState.feedbacks;
 
   useEffect(() => {
@@ -75,29 +71,6 @@ const FeedbackAnalytics = () => {
         ? Math.round((distribution[index] / feedbacks.length) * 100)
         : 0,
     }));
-  }, [feedbacks]);
-
-  // Calculate visibility stats
-  const visibilityStats = useMemo(() => {
-    const publicCount = feedbacks.filter((f) => f.showOnWebsite).length;
-    const totalCount = feedbacks.length;
-
-    return [
-      {
-        name: "Public",
-        value: publicCount,
-        percentage: totalCount
-          ? Math.round((publicCount / totalCount) * 100)
-          : 0,
-      },
-      {
-        name: "Hidden",
-        value: totalCount - publicCount,
-        percentage: totalCount
-          ? Math.round(((totalCount - publicCount) / totalCount) * 100)
-          : 0,
-      },
-    ];
   }, [feedbacks]);
 
   // Load appropriate content based on the current state
