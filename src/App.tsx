@@ -8,7 +8,6 @@ import LoginPage from "@/pages/Auth/LoginPage";
 import SignupPage from "@/pages/Auth/SignupPage";
 import NotFoundPage from "@/pages/Auth/NotFoundPage";
 import { useAuth } from "@/hooks/useAuth";
-import DataTableDemo from "@/pages/TestingPages/DataTableDemo";
 import DashboardPage from "@/pages/Dashboard/DashboardPage";
 import AdminPage from "@/pages/Admin/AdminPage";
 import DentistPage from "@/pages/Dentist/DentistPage";
