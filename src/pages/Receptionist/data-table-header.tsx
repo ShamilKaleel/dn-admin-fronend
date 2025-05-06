@@ -5,7 +5,7 @@ import { exportToExcel } from "@/lib/export-to-excel";
 import { useState } from "react";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import ReceptionistForm from "@/components/forms/receptionist-form";
-import { columnHeadersDoctor } from "@/constant/index";
+import { columnHeadersReceptionist } from "@/constant/index";
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -22,7 +22,7 @@ export function DataTableHeader<TData>({
     exportToExcel(
       dataToExport,
       "Receptionist",
-      columnHeadersDoctor,
+      columnHeadersReceptionist,
       [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
     );
   };

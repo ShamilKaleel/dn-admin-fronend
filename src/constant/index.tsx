@@ -97,6 +97,17 @@ const columnHeadersDoctor = [
   "Roles",
 ];
 
+const columnHeadersReceptionist = [
+  "Id",
+  "User Name",
+  "Email",
+  "Gender",
+  "First Name",
+  "Phone Number",
+  "Nic",
+  "Roles",
+];
+
 const columnHeadersSchedule = [
   "Id",
   "Date",
@@ -117,4 +128,5 @@ export {
   columnHeadersBooking,
   columnHeadersDoctor,
   columnHeadersSchedule,
+  columnHeadersReceptionist,
 };
