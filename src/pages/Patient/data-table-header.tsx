@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ResponsiveDialog } from "@/components/responsive-dialog";
 import PatientForm from "@/components/forms/patient-form";
 import PatientFromBookingForm from "@/components/forms/patient-from-booking-form";
-import { columnHeadersSchedule } from "@/constant/index";
+import { columnHeadersPatient } from "@/constant/index";
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -24,8 +24,8 @@ export function DataTableHeader<TData>({
     exportToExcel(
       dataToExport,
       "Patient",
-      columnHeadersSchedule,
-      Array(columnHeadersSchedule.length).fill(20)
+      columnHeadersPatient,
+      Array(columnHeadersPatient.length).fill(20)
     );
   };
   return (

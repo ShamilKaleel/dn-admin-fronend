@@ -108,6 +108,8 @@ const columnHeadersReceptionist = [
   "Roles",
 ];
 
+const columnHeadersPatient = ["Id", "Name", "Email", "NIC", "Contact Number"];
+
 const columnHeadersSchedule = [
   "Id",
   "Date",
@@ -129,4 +131,5 @@ export {
   columnHeadersDoctor,
   columnHeadersSchedule,
   columnHeadersReceptionist,
+  columnHeadersPatient,
 };
