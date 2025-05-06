@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
+// In your ResponsiveDialog component
 export function ResponsiveDialog({
   children,
   isOpen,
@@ -39,7 +40,11 @@ export function ResponsiveDialog({
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className={`${className ?? "sm:max-w-[425px] "}`}>
+        <DialogContent
+          className={`${className ?? "sm:max-w-[425px] "}`}
+          // Add this line to fix the warning when no description is provided
+          aria-describedby={description ? undefined : "dialog-content"}
+        >
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold mb-4">
               {title}
@@ -60,9 +65,10 @@ export function ResponsiveDialog({
         <DrawerHeader className="text-center ">
           <DrawerTitle>{title}</DrawerTitle>
           {description && (
-            <DialogDescription className="mb-3 text-center">
+            // Fix this line - it should be DrawerDescription, not DialogDescription
+            <DrawerDescription className="mb-3 text-center">
               {description}
-            </DialogDescription>
+            </DrawerDescription>
           )}
         </DrawerHeader>
         {children}
