@@ -172,7 +172,7 @@ const BookingEditForm: React.FC<BookingEditFormProps> = ({
 
         <div>
           <label htmlFor="scheduleId" className="block text-sm font-medium">
-            Schedule ID
+            Schedule
           </label>
           <Select
             onValueChange={(value) => setValue("scheduleId", value)}
