@@ -160,7 +160,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ setIsOpen }) => {
 
         <div>
           <label htmlFor="scheduleId" className="block text-sm font-medium">
-            Schedule ID
+            Schedule
           </label>
           <Select
             onValueChange={(value) => {
@@ -168,7 +168,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ setIsOpen }) => {
             }}
           >
             <SelectTrigger className={`w-full `}>
-              <SelectValue placeholder="Select Doctor" />
+              <SelectValue placeholder="Select Schedule" />
             </SelectTrigger>
             <SelectContent>
               {schedules?.map((schedule: SelectSchedule, index) => (
