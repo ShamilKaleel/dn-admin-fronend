@@ -34,19 +34,31 @@ const FeedbackAnalytics = () => {
   const feedbacks = feedbackState.feedbacks;
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadData = async () => {
       try {
-        setLoading(true);
+        if (isMounted) setLoading(true);
         await fetchFeedbacks();
       } catch (error) {
         console.error("Failed to fetch feedback data", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    loadData();
-  }, [fetchFeedbacks]);
+    // Only fetch if we don't already have data
+    if (feedbacks.length === 0) {
+      loadData();
+    } else {
+      setLoading(false);
+    }
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchFeedbacks, feedbacks.length]);
 
   // Calculate average rating
   const averageRating = useMemo(() => {
