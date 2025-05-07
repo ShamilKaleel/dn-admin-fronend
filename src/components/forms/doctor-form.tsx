@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Lorder from "@/components/Lorder";
 import { Input } from "@/components/ui/input";
 const doctorSchema = z.object({
   userName: z.string().min(3, "Username must be at least 3 characters long"),

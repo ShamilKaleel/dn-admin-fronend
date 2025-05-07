@@ -58,9 +58,20 @@ export const FeedbackContext = createContext<{
 export const FeedbackProvider = ({ children }: { children: ReactNode }) => {
   const [feedbackState, dispatch] = useReducer(feedbackReducer, initialState);
 
+  // feedbackContext.tsx (partial changes)
   const fetchFeedbacks = async () => {
-    const response = await axiosInstance.get<Feedback[]>("/feedback/all");
-    dispatch({ type: "FETCH_FEEDBACKS", payload: response.data });
+    // Don't fetch if we already have data
+    if (feedbackState.feedbacks.length > 0) {
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.get<Feedback[]>("/feedback/all");
+      dispatch({ type: "FETCH_FEEDBACKS", payload: response.data });
+    } catch (error) {
+      console.error("Error fetching feedbacks:", error);
+      // Re-throw so component can handle display of error
+    }
   };
 
   const addFeedback = async (feedback: Feedback) => {

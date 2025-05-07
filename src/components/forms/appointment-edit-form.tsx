@@ -22,7 +22,7 @@ const bookingSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
-    .max(20, "Name should be less than 20 characters"),
+    .max(40, "Name should be less than 40 characters"),
   nic: z
     .string()
     .regex(/^(\d{9}[VX]|[1-9]\d{11})$/, "Please enter a valid NIC number")
@@ -172,7 +172,7 @@ const BookingEditForm: React.FC<BookingEditFormProps> = ({
 
         <div>
           <label htmlFor="scheduleId" className="block text-sm font-medium">
-            Schedule ID
+            Schedule
           </label>
           <Select
             onValueChange={(value) => setValue("scheduleId", value)}

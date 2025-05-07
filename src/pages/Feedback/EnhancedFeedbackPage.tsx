@@ -74,23 +74,37 @@ const EnhancedFeedbackPage = ({ onViewDetails }: EnhancedFeedbackPageProps) => {
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadFeedbacks = async () => {
       try {
-        setLoading(true);
+        if (isMounted) setLoading(true);
         await fetchFeedbacks();
       } catch (error) {
         console.error("Failed to fetch feedbacks", error);
-        toast({
-          title: "Error",
-          description: "Failed to load feedback data",
-          variant: "destructive",
-        });
+        if (isMounted) {
+          toast({
+            title: "Error",
+            description: "Failed to load feedback data",
+            variant: "destructive",
+          });
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    loadFeedbacks();
+    // Only fetch if we don't already have data
+    if (feedbackState.feedbacks.length === 0) {
+      loadFeedbacks();
+    } else {
+      setLoading(false);
+    }
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleToggleVisibility = async (id: string, currentState: boolean) => {

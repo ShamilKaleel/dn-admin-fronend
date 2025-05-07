@@ -1,3 +1,4 @@
+// FeedbackPage.tsx
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -27,18 +28,25 @@ const FeedbackPage = () => {
   const { feedbackState, fetchFeedbacks } = useFeedback();
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadData = async () => {
       try {
-        setLoading(true);
+        if (isMounted) setLoading(true);
         await fetchFeedbacks();
       } catch (error) {
         console.error("Failed to fetch feedback data", error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     loadData();
+
+    // Cleanup function to prevent state updates if component unmounts
+    return () => {
+      isMounted = false;
+    };
   }, [fetchFeedbacks]);
 
   const handleViewDetails = (feedback: Feedback) => {
@@ -75,27 +83,30 @@ const FeedbackPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Manage Feedback Tab */}
-        <TabsContent value="manage" className="mt-4">
-          <div className="pl-2 mb-6">
-            <h1 className="text-2xl font-bold">Feedback Management</h1>
-            <p className="text-muted-foreground">
-              View and manage patient feedback
-            </p>
-          </div>
-          <EnhancedFeedbackPage onViewDetails={handleViewDetails} />
-        </TabsContent>
+        {/* Conditionally render content based on active tab to reduce unnecessary rendering */}
+        {activeTab === "manage" && (
+          <TabsContent value="manage" className="mt-4">
+            <div className="pl-2 mb-6">
+              <h1 className="text-2xl font-bold">Feedback Management</h1>
+              <p className="text-muted-foreground">
+                View and manage patient feedback
+              </p>
+            </div>
+            <EnhancedFeedbackPage onViewDetails={handleViewDetails} />
+          </TabsContent>
+        )}
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="mt-4">
-          <div className="mb-6 pl-2">
-            <h1 className="text-2xl font-bold">Feedback Analytics</h1>
-            <p className="text-muted-foreground">
-              View insights from patient feedback data
-            </p>
-          </div>
-          <FeedbackAnalytics />
-        </TabsContent>
+        {activeTab === "analytics" && (
+          <TabsContent value="analytics" className="mt-4">
+            <div className="mb-6 pl-2">
+              <h1 className="text-2xl font-bold">Feedback Analytics</h1>
+              <p className="text-muted-foreground">
+                View insights from patient feedback data
+              </p>
+            </div>
+            <FeedbackAnalytics />
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Feedback Detail Dialog */}

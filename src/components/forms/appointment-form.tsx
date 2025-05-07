@@ -23,7 +23,7 @@ const bookingSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
-    .max(20, "Name should be less than 20 characters"),
+    .max(40, "Name should be less than 40 characters"),
   nic: z
     .string()
     .regex(/^(\d{9}[VX]|[1-9]\d{11})$/, "Please enter a valid NIC number")
@@ -106,7 +106,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ setIsOpen }) => {
     );
   }
 
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-5 md:px-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -161,7 +160,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ setIsOpen }) => {
 
         <div>
           <label htmlFor="scheduleId" className="block text-sm font-medium">
-            Schedule ID
+            Schedule
           </label>
           <Select
             onValueChange={(value) => {
@@ -169,7 +168,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ setIsOpen }) => {
             }}
           >
             <SelectTrigger className={`w-full `}>
-              <SelectValue placeholder="Select Doctor" />
+              <SelectValue placeholder="Select Schedule" />
             </SelectTrigger>
             <SelectContent>
               {schedules?.map((schedule: SelectSchedule, index) => (
