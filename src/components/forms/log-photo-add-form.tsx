@@ -47,6 +47,7 @@ const AddImageComponent: React.FC<AddImageComponentProps> = ({
       const presignedUrlResponse = await axiosInstance.post<{
         url: string;
         key: string;
+
       }>(`/s3/generate-presigned-url`, {
         fileName: selectedFile.name,
         fileType: selectedFile.type,
