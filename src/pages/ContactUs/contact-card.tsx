@@ -26,14 +26,18 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, onSelect }) => {
     >
       <CardContent className="p-0 flex-grow">
         <div className="p-4 border-b flex justify-between items-center bg-muted/30">
-          <div className="flex items-center">
+          <div className="flex items-center flex-shrink min-w-0 mr-2">
             <User className="h-5 w-5 text-gray-500 mr-2 shrink-0" />
-            <h3 className="font-medium truncate">{contact.name}</h3>
+            <h3 className="font-medium w-40">
+              {contact.name.length > 20
+                ? `${contact.name.substring(0, 20)}...`
+                : contact.name}
+            </h3>
           </div>
           {contact.replySent && (
             <Badge
               variant="secondary"
-              className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+              className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 shrink-0 whitespace-nowrap"
             >
               Responded
             </Badge>
