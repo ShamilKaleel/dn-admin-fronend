@@ -40,6 +40,15 @@ export const columns: ColumnDef<Booking>[] = [
     ),
   },
   {
+    accessorKey: "nic",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="NIC" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[90px]  capitalize">{row.getValue("nic")}</div>
+    ),
+  },
+  {
     accessorKey: "scheduleDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Schedule Date" />
